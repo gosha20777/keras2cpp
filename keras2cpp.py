@@ -16,6 +16,8 @@ ACTIVATION_SOFTPLUS = 3
 ACTIVATION_SIGMOID = 4
 ACTIVATION_TANH = 5
 ACTIVATION_HARD_SIGMOID = 6
+ACTIVATION_ELU = 7
+ACTIVATION_SOFTSIGN = 8
 
 def write_floats(file, floats):
     '''
@@ -48,6 +50,10 @@ def export_model(model, filename):
                 f.write(struct.pack('I', ACTIVATION_SIGMOID))
             elif activation == 'hard_sigmoid':
                 f.write(struct.pack('I', ACTIVATION_HARD_SIGMOID))
+            elif activation == 'elu':
+                f.write(struct.pack('I', ACTIVATION_ELU))
+            elif activation == 'softsign':
+                f.write(struct.pack('I', ACTIVATION_SOFTSIGN))
             else:
                 assert False, "Unsupported activation type: %s" % activation
 

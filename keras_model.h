@@ -279,7 +279,9 @@ class KerasLayerActivation : public KerasLayer {
         kSoftPlus = 3,
         kSigmoid = 4,
         kTanh = 5,
-        kHardSigmoid = 6
+        kHardSigmoid = 6,
+        kElu = 7,
+        kSoftSign = 8
     };
 
     KerasLayerActivation() : activation_type_(ActivationType::kLinear) {}

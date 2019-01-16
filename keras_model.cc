@@ -86,18 +86,29 @@ bool KerasLayerActivation::Apply(Tensor* in, Tensor* out) {
             }
         }
         break;
+    case kElu:
+        for (size_t i = 0; i < out->data_.size(); i++) {
+            if (out->data_[i] < 0.0) {
+                out->data_[i] = std::expm1(out->data_[i]);
+            }
+        }
     case kSoftPlus:
         for (size_t i = 0; i < out->data_.size(); i++) {
             out->data_[i] = std::log(1.0 + std::exp(out->data_[i]));
+        }
+        break;
+    case kSoftSign:
+        for (size_t i = 0; i < out->data_.size(); i++) {
+            out->data_[i] = out->data_[i] / (1.0 + std::abs(out->data_[i]));
         }
         break;
     case kHardSigmoid:
         for (size_t i = 0; i < out->data_.size(); i++) {
             float x = (out->data_[i] * 0.2) + 0.5;
 
-            if (x <= 0) {
+            if (x <= -2.5) {
                 out->data_[i] = 0.0;
-            } else if (x >= 1) {
+            } else if (x >= 2.5) {
                 out->data_[i] = 1.0;
             } else {
                 out->data_[i] = x;
