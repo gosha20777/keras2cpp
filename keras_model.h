@@ -196,6 +196,22 @@ class Tensor {
         return tmp;
     }
 
+    Tensor Fma(const Tensor& scale, const Tensor& bias) const noexcept {
+        KASSERT(dims_ == scale.dims_, "Invalid tensor dimensions");
+        KASSERT(dims_ == bias.dims_, "Invalid tensor dimensions");
+
+        Tensor result;
+        result.dims_ = dims_;
+        result.data_.resize(data_.size());
+
+        auto k_ = scale.data_.begin();
+        auto b_ = bias.data_.begin();
+        auto r_ = result.data_.begin();
+        for (auto x_ = data_.begin(); x_ != data_.end();)
+            *(r_++) = *(x_++) * *(k_++) + *(b_++);
+        return result;
+    }
+
     void Print() {
         if (dims_.size() == 1) {
             printf("[ ");
@@ -342,6 +358,21 @@ class KerasLayerFlatten : public KerasLayer {
     virtual bool Apply(Tensor* in, Tensor* out);
 
   private:
+};
+
+class KerasLayerBatchNormalization : public KerasLayer {
+  public:
+    KerasLayerBatchNormalization() {}
+
+    virtual ~KerasLayerBatchNormalization() {}
+
+    virtual bool LoadLayer(std::ifstream* file);
+
+    virtual bool Apply(Tensor* in, Tensor* out);
+
+  private:
+    Tensor weights_;
+    Tensor biases_;
 };
 
 class KerasLayerElu : public KerasLayer {
