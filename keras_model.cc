@@ -102,6 +102,18 @@ bool KerasLayerActivation::Apply(Tensor* in, Tensor* out) {
             out->data_[i] = out->data_[i] / (1.0 + std::abs(out->data_[i]));
         }
         break;
+    case kSoftMax:
+        if(out->data_.size() > 1){
+            float sum = 0.0;
+            float max = *std::max_element(std::begin(out->data_), std::end(out->data_));
+            for (size_t i = 0; i < out->data_.size(); i++) {
+                out->data_[i] = std::exp(out->data_[i] - max);
+                sum += out->data_[i];
+            }
+            for (size_t i = 0; i < out->data_.size(); i++)
+                out->data_[i] /= sum;
+        }
+        break;
     case kHardSigmoid:
         for (size_t i = 0; i < out->data_.size(); i++) {
             float x = (out->data_[i] * 0.2) + 0.5;
