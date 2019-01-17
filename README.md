@@ -1,5 +1,5 @@
 
-![release](https://img.shields.io/github/release/gosha20777/keras2cpp.svg?colorB=red) ![lisense](https://img.shields.io/github/license/gosha20777/keras2cpp.svg) ![progress](http://progressed.io/bar/64?title=progres)
+![release](https://img.shields.io/github/release/gosha20777/keras2cpp.svg?colorB=red) ![lisense](https://img.shields.io/github/license/gosha20777/keras2cpp.svg) ![progress](http://progressed.io/bar/68?title=progres)
 
 # Keras2cpp
 
@@ -40,7 +40,7 @@ Supported activation:
 - [x] hard_sigmoid
 - [x] elu
 - [x] softsign
-- [ ] softmax
+- [x] softmax
 
 Other tasks:
 - [ ] Create unit tests
