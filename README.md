@@ -1,3 +1,6 @@
+
+![release](https://img.shields.io/github/release/gosha20777/keras2cpp.svg?colorB=red) ![lisense](https://img.shields.io/github/license/gosha20777/keras2cpp.svg) ![progress](http://progressed.io/bar/64?title=progres)
+
 # Keras2cpp
 
 Keras2cpp is a small library for running trained Keras models from a C++ application without any dependences. 
@@ -10,13 +13,38 @@ Design goals:
 - Model stored on disk in binary format and can be quickly read.
 - Model stored in memory in contiguous block for better cache performance.
 
-Currently implemented Keras layers:
+*Not not layer and activation types are supported yet. Work in progress*
 
-- Embedding, Flatten
-- Dense, Conv1D, Conv2D, LocallyConnected1D
-- LSTM GRU CNN
-- BatchNormalization, MaxPooling
-- Layer activation: ELU, HardSigmoid, Linear, ReLU, Sigmoid, SoftMax, SoftPlus, SoftSign, Tanh
+Supported Keras layers:
+- [x] Dense
+- [x] Convolution2D
+- [x] Flatten
+- [x] ELU
+- [x] Activation
+- [x] MaxPooling2D
+- [x] LSTM
+- [x] Embedding
+- [ ] Convolution1D
+- [ ] Convolution3D
+- [ ] LocallyConnected1D
+- [ ] GRU
+- [ ] CNN
+- [ ] BatchNormalization
+
+Supported activation:
+- [x] linear
+- [x] relu
+- [x] softplus
+- [x] tanh
+- [x] sigmoid
+- [x] hard_sigmoid
+- [x] elu
+- [x] softsign
+- [ ] softmax
+
+Other tasks:
+- [ ] Create unit tests
+- [ ] Create Makefile
 
 The project is compatible with Keras 2.x (all versions) and Python 3.x
 
