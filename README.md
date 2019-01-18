@@ -28,7 +28,7 @@ Supported Keras layers:
 - [ ] LocallyConnected1D
 - [ ] GRU
 - [ ] CNN
-- [X] BatchNormalization
+- [X] BatchNormalization *(dirty)*
 
 Supported activation:
 - [x] linear
@@ -44,6 +44,7 @@ Supported activation:
 Other tasks:
 - [ ] Create unit tests
 - [ ] Create Makefile
+- [ ] Code refactoring
 
 The project is compatible with Keras 2.x (all versions) and Python 3.x
 
