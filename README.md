@@ -1,7 +1,6 @@
+# Keras2cpp ![release](https://img.shields.io/github/release/gosha20777/keras2cpp.svg?colorB=red) ![lisense](https://img.shields.io/github/license/gosha20777/keras2cpp.svg) ![progress](http://progressed.io/bar/68?title=progres)
 
-![release](https://img.shields.io/github/release/gosha20777/keras2cpp.svg?colorB=red) ![lisense](https://img.shields.io/github/license/gosha20777/keras2cpp.svg) ![progress](http://progressed.io/bar/68?title=progres)
-
-# Keras2cpp
+![keras2cpp](docs/img/keras2cpp.png)
 
 Keras2cpp is a small library for running trained Keras models from a C++ application without any dependences. 
 
@@ -29,7 +28,7 @@ Supported Keras layers:
 - [ ] LocallyConnected1D
 - [ ] GRU
 - [ ] CNN
-- [ ] BatchNormalization
+- [X] BatchNormalization
 
 Supported activation:
 - [x] linear
