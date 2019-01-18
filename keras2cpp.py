@@ -85,7 +85,7 @@ def export_model(model, filename):
 
                 write_activation(activation)
 
-            elif layer_type == 'Convolution2D' or 'Conv2D':
+            elif layer_type == 'Convolution2D' or layer_type == 'Conv2D':
                 assert layer.border_mode == 'valid', "Only border_mode=valid is implemented"
 
                 weights = layer.get_weights()[0]
