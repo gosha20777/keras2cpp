@@ -42,9 +42,9 @@ Supported activation:
 - [x] softmax
 
 Other tasks:
-- [ ] Create unit tests
-- [ ] Create Makefile
-- [ ] Code refactoring
+- [x] Create unit tests
+- [x] Create Makefile
+- [ ] Code refactoring *(in progress)*
 
 The project is compatible with Keras 2.x (all versions) and Python 3.x
 
