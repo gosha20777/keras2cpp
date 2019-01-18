@@ -459,7 +459,8 @@ class KerasModel {
         kActivation = 5,
         kMaxPooling2D = 6,
         kLSTM = 7,
-        kEmbedding = 8
+        kEmbedding = 8,
+        kBatchNormalization = 9
     };
 
     KerasModel() {}

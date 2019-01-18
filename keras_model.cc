@@ -338,8 +338,8 @@ bool KerasLayerBatchNormalization::LoadLayer(std::ifstream* file) {
 bool KerasLayerBatchNormalization::Apply(Tensor* in, Tensor* out) {
     KASSERT(in, "Invalid input");
     KASSERT(out, "Invalid output");
-
-    *out = in->Fma(weights_, biases_);
+    *out = *in;
+    out->Fma(weights_, biases_);
 
     return true;
 }
@@ -699,6 +699,9 @@ bool KerasModel::LoadModel(const std::string& filename) {
             break;
         case kEmbedding:
             layer = new KerasLayerEmbedding();
+            break;
+        case kBatchNormalization:
+            layer = new KerasLayerBatchNormalization();
             break;
         default:
             break;

@@ -9,6 +9,7 @@ LAYER_ACTIVATION = 5
 LAYER_MAXPOOLING2D = 6
 LAYER_LSTM = 7
 LAYER_EMBEDDING = 8
+LAYER_BATCHNORMALIZATION = 9
 
 ACTIVATION_LINEAR = 1
 ACTIVATION_RELU = 2
@@ -220,6 +221,24 @@ def export_model(model, filename):
                 weights = weights.flatten()
 
                 write_floats(f, weights)
+            elif layer_type == 'BatchNormalization':
+                epsilon = layer.epsilon
+                gamma = layer.get_weights()[0]
+                beta = layer.get_weights()[1]
+                pop_mean = layer.get_weights()[2]
+                pop_variance = layer.get_weights()[3]
 
+                weights = gamma / np.sqrt(pop_variance + epsilon)
+                biases = beta - pop_mean * weights
+
+                f.write(struct.pack('I', LAYER_BATCHNORMALIZATION))
+                f.write(struct.pack('I', weights.shape[0]))
+                f.write(struct.pack('I', biases.shape[0]))
+
+                weights = weights.flatten()
+                biases = biases.flatten()
+
+                write_floats(f, weights)
+                write_floats(f, biases)
             else:
                 assert False, "Unsupported layer type: %s" % layer_type
