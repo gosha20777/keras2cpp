@@ -1,27 +1,19 @@
-#include "elu.h"
+﻿#include "elu.h"
 namespace keras2cpp{
     namespace layers{
-        bool KerasLayerElu::LoadLayer(std::ifstream* file) {
-            KASSERT(file, "Invalid file stream");
-        
-            KASSERT(ReadFloat(file, &alpha_), "Failed to read alpha");
-        
-            return true;
-        }
-        
-        bool KerasLayerElu::Apply(Tensor* in, Tensor* out) {
-            KASSERT(in, "Invalid input");
-            KASSERT(out, "Invalid output");
-        
-            *out = *in;
-        
-            for (size_t i = 0; i < out->data_.size(); i++) {
-                if (out->data_[i] < 0.0) {
-                    out->data_[i] = alpha_ * (exp(out->data_[i]) - 1.0);
-                }
-            }
-        
-            return true;
+        ELU::ELU(Stream& file) : alpha_(file) {}    
+        Tensor ELU::operator()(const Tensor& in) const noexcept {
+            kassert(in.ndim());
+            Tensor out;
+            out.data_.resize(in.size());
+            out.dims_ = in.dims_;
+
+            std::transform(in.begin(), in.end(), out.begin(), [this](float x) {
+                if (x >= 0.f)
+                    return x;
+                return alpha_ * std::expm1(x);
+            });
+            return out;
         }
     }
 }

@@ -1,13 +1,13 @@
-#include "tensor.h"
+﻿#include "tensor.h"
 
 namespace keras2cpp {
     Tensor::Tensor(Stream& file, size_t rank) : Tensor() {
-        KASSERT(rank);
+        kassert(rank);
 
         dims_.reserve(rank);
         std::generate_n(std::back_inserter(dims_), rank, [&file] {
             unsigned stride = file;
-            KASSERT(stride > 0);
+            kassert(stride > 0);
             return stride;
         });
 
@@ -16,7 +16,7 @@ namespace keras2cpp {
     }
 
     Tensor Tensor::unpack(size_t row) const noexcept {
-        KASSERT(ndim() >= 2);
+        kassert(ndim() >= 2);
         size_t pack_size = std::accumulate(dims_.begin() + 1, dims_.end(), 0u);
 
         auto base = row * pack_size;
@@ -36,20 +36,20 @@ namespace keras2cpp {
     }
 
     Tensor& Tensor::operator+=(const Tensor& other) noexcept {
-        KASSERT(dims_ == other.dims_);
+        kassert(dims_ == other.dims_);
         std::transform(begin(), end(), other.begin(), begin(), std::plus<>());
         return *this;
     }
 
     Tensor& Tensor::operator*=(const Tensor& other) noexcept {
-        KASSERT(dims_ == other.dims_);
+        kassert(dims_ == other.dims_);
         std::transform(begin(), end(), other.begin(), begin(), std::multiplies<>());
         return *this;
     }
 
     Tensor Tensor::fma(const Tensor& scale, const Tensor& bias) const noexcept {
-        KASSERT(dims_ == scale.dims_);
-        KASSERT(dims_ == bias.dims_);
+        kassert(dims_ == scale.dims_);
+        kassert(dims_ == bias.dims_);
 
         Tensor result;
         result.dims_ = dims_;
@@ -65,9 +65,9 @@ namespace keras2cpp {
     }
 
     Tensor Tensor::dot(const Tensor& other) const noexcept {
-        KASSERT(ndim() == 2);
-        KASSERT(other.ndim() == 2);
-        KASSERT(dims_[1] == other.dims_[1]);
+        kassert(ndim() == 2);
+        kassert(other.ndim() == 2);
+        kassert(dims_[1] == other.dims_[1]);
 
         Tensor tmp {dims_[0], other.dims_[0]};
 
@@ -114,5 +114,4 @@ namespace keras2cpp {
         }
         printf(")\n");
     }
-
 }

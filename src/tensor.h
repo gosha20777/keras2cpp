@@ -1,3 +1,4 @@
+﻿#pragma once
 #include <algorithm>
 #include <numeric>
 #include "utils.h"
@@ -79,61 +80,61 @@ namespace keras2cpp {
         return dims_.size();
     }
     Tensor& Tensor::flatten() noexcept {
-        KASSERT(ndim());
+        kassert(ndim());
         dims_ = {size()};
         return *this;
     }
     float& Tensor::operator()(size_t i) noexcept {
-        KASSERT(ndim() == 1);
-        KASSERT(i < dims_[0]);
+        kassert(ndim() == 1);
+        kassert(i < dims_[0]);
         return data_[i];
     }
     float Tensor::operator()(size_t i) const noexcept {
-        KASSERT(ndim() == 1);
-        KASSERT(i < dims_[0]);
+        kassert(ndim() == 1);
+        kassert(i < dims_[0]);
         return data_[i];
     }
     float& Tensor::operator()(size_t i, size_t j) noexcept {
-        KASSERT(ndim() == 2);
-        KASSERT(i < dims_[0]);
-        KASSERT(j < dims_[1]);
+        kassert(ndim() == 2);
+        kassert(i < dims_[0]);
+        kassert(j < dims_[1]);
         return data_[dims_[1] * i + j];
     }
     float Tensor::operator()(size_t i, size_t j) const noexcept {
-        KASSERT(ndim() == 2);
-        KASSERT(i < dims_[0]);
-        KASSERT(j < dims_[1]);
+        kassert(ndim() == 2);
+        kassert(i < dims_[0]);
+        kassert(j < dims_[1]);
         return data_[dims_[1] * i + j];
     }
     float& Tensor::operator()(size_t i, size_t j, size_t k) noexcept {
-        KASSERT(ndim() == 3);
-        KASSERT(i < dims_[0]);
-        KASSERT(j < dims_[1]);
-        KASSERT(k < dims_[2]);
+        kassert(ndim() == 3);
+        kassert(i < dims_[0]);
+        kassert(j < dims_[1]);
+        kassert(k < dims_[2]);
         return data_[dims_[2] * (dims_[1] * i + j) + k];
     }
     float Tensor::operator()(size_t i, size_t j, size_t k) const noexcept {
-        KASSERT(ndim() == 3);
-        KASSERT(i < dims_[0]);
-        KASSERT(j < dims_[1]);
-        KASSERT(k < dims_[2]);
+        kassert(ndim() == 3);
+        kassert(i < dims_[0]);
+        kassert(j < dims_[1]);
+        kassert(k < dims_[2]);
         return data_[dims_[2] * (dims_[1] * i + j) + k];
     }
     float& Tensor::operator()(size_t i, size_t j, size_t k, size_t l) noexcept {
-        KASSERT(ndim() == 4);
-        KASSERT(i < dims_[0]);
-        KASSERT(j < dims_[1]);
-        KASSERT(k < dims_[2]);
-        KASSERT(l < dims_[3]);
+        kassert(ndim() == 4);
+        kassert(i < dims_[0]);
+        kassert(j < dims_[1]);
+        kassert(k < dims_[2]);
+        kassert(l < dims_[3]);
         return data_[dims_[3] * (dims_[2] * (dims_[1] * i + j) + k) + l];
     }
     float Tensor::operator()(size_t i, size_t j, size_t k, size_t l) const
         noexcept {
-        KASSERT(ndim() == 4);
-        KASSERT(i < dims_[0]);
-        KASSERT(j < dims_[1]);
-        KASSERT(k < dims_[2]);
-        KASSERT(l < dims_[3]);
+        kassert(ndim() == 4);
+        kassert(i < dims_[0]);
+        kassert(j < dims_[1]);
+        kassert(k < dims_[2]);
+        kassert(l < dims_[3]);
         return data_[dims_[3] * (dims_[2] * (dims_[1] * i + j) + k) + l];
     }
     void Tensor::fill(float value) noexcept {
@@ -158,5 +159,5 @@ namespace keras2cpp {
     inline Tensor operator*(Tensor lhs, const Tensor& rhs) noexcept {
         lhs *= rhs;
         return lhs;
-    }    
+    }
 }

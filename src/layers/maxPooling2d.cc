@@ -1,51 +1,36 @@
-#include "maxPooling2d.h"
+﻿#include "maxPooling2d.h"
 namespace keras2cpp{
     namespace layers{
-        bool KerasLayerMaxPooling2d::LoadLayer(std::ifstream* file) {
-            KASSERT(file, "Invalid file stream");
-        
-            KASSERT(ReadUnsignedInt(file, &pool_size_j_), "Expected pool size j");
-            KASSERT(ReadUnsignedInt(file, &pool_size_k_), "Expected pool size k");
-        
-            return true;
-        }
-        
-        bool KerasLayerMaxPooling2d::Apply(Tensor* in, Tensor* out) {
-            KASSERT(in, "Invalid input");
-            KASSERT(out, "Invalid output");
-        
-            KASSERT(in->dims_.size() == 3, "Input must have 3 dimensions");
-        
-            Tensor tmp(in->dims_[0], in->dims_[1] / pool_size_j_,
-                       in->dims_[2] / pool_size_k_);
-        
-            for (int i = 0; i < tmp.dims_[0]; i++) {
-                for (int j = 0; j < tmp.dims_[1]; j++) {
-                    const int tj = j * pool_size_j_;
-        
-                    for (int k = 0; k < tmp.dims_[2]; k++) {
-                        const int tk = k * pool_size_k_;
-        
-                        // Find maximum value over patch starting at tj, tk.
-                        float max_val = -std::numeric_limits<float>::infinity();
-        
-                        for (unsigned int pj = 0; pj < pool_size_j_; pj++) {
-                            for (unsigned int pk = 0; pk < pool_size_k_; pk++) {
-                                const float& pool_val = (*in)(i, tj + pj, tk + pk);
-                                if (pool_val > max_val) {
-                                    max_val = pool_val;
-                                }
-                            }
-                        }
-        
-                        tmp(i, j, k) = max_val;
-                    }
-                }
+        MaxPooling2D::MaxPooling2D(Stream& file)
+        : pool_size_y_(file), pool_size_x_(file) {}
+
+        Tensor MaxPooling2D::operator()(const Tensor& in) const noexcept {
+            kassert(in.ndim() == 3);
+
+            const auto& iw = in.dims_;
+
+            Tensor out {iw[0] / pool_size_y_, iw[1] / pool_size_x_, iw[2]};
+            out.fill(-std::numeric_limits<float>::infinity());
+
+            auto is0p = cast(iw[2] * iw[1] * pool_size_y_);
+            auto is0 = cast(iw[2] * iw[1]);
+            auto is1p = cast(iw[2] * pool_size_x_);
+            auto is1 = cast(iw[2]);
+            auto os_ = cast(iw[2] * out.dims_[1] * out.dims_[0]);
+            auto os0 = cast(iw[2] * out.dims_[1]);
+
+            auto o_ptr = out.begin();
+            auto i_ptr = in.begin();
+            for (auto o0 = o_ptr; o0 < o_ptr + os_; o0 += os0, i_ptr += is0p) {
+                auto i_ = i_ptr;
+                for (auto o1 = o0; o1 < o0 + os0; o1 += is1, i_ += is1p)
+                    for (auto i0 = i_; i0 < i_ + is0p; i0 += is0)
+                        for (auto i1 = i0; i1 < i0 + is1p; i1 += is1)
+                            std::transform(i1, i1 + is1, o1, o1, [](float x, float y) {
+                                return std::max(x, y);
+                            });
             }
-        
-            *out = tmp;
-        
-            return true;
+            return out;
         }
     }
 }

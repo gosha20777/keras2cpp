@@ -1,118 +1,97 @@
-#include "activation.h"
+﻿#include "activation.h"
 namespace keras2cpp{
     namespace layers{
-        bool KerasLayerActivation::LoadLayer(std::ifstream* file) {
-            KASSERT(file, "Invalid file stream");
-
-            unsigned int activation = 0;
-            KASSERT(ReadUnsignedInt(file, &activation),
-                    "Failed to read activation type");
-
-            switch (activation) {
-            case kLinear:
-                activation_type_ = kLinear;
-                break;
-            case kRelu:
-                activation_type_ = kRelu;
-                break;
-            case kSoftPlus:
-                activation_type_ = kSoftPlus;
-                break;
-            case kHardSigmoid:
-                activation_type_ = kHardSigmoid;
-                break;
-            case kSigmoid:
-                activation_type_ = kSigmoid;
-                break;
-            case kTanh:
-                activation_type_ = kTanh;
-                break;
-            default:
-                KASSERT(false, "Unsupported activation type %d", activation);
+        Activation::Activation(Stream& file) : type_(file) {
+            switch (type_) {
+            case Linear:
+            case Relu:
+            case Elu:
+            case SoftPlus:
+            case SoftSign:
+            case HardSigmoid:
+            case Sigmoid:
+            case Tanh:
+            case SoftMax:
+                return;
             }
-
-            return true;
+            kassert(false);
         }
-    
-        bool KerasLayerActivation::Apply(Tensor* in, Tensor* out) {
-            KASSERT(in, "Invalid input");
-            KASSERT(out, "Invalid output");
 
-            *out = *in;
+        Tensor Activation::operator()(const Tensor& in) const noexcept {
+            Tensor out {in.size()};
+            out.dims_ = in.dims_;
 
-            switch (activation_type_) {
-            case kLinear:
+            switch (type_) {
+            case Linear:
+                std::copy(in.begin(), in.end(), out.begin());
                 break;
-            case kRelu:
-                for (size_t i = 0; i < out->data_.size(); i++) {
-                    if (out->data_[i] < 0.0) {
-                        out->data_[i] = 0.0;
-                    }
-                }
+            case Relu:
+                std::transform(in.begin(), in.end(), out.begin(), [](float x) {
+                    if (x < 0.f)
+                        return 0.f;
+                    return x;
+                });
                 break;
-            case kElu:
-                for (size_t i = 0; i < out->data_.size(); i++) {
-                    if (out->data_[i] < 0.0) {
-                        out->data_[i] = std::expm1(out->data_[i]);
-                    }
-                }
-            case kSoftPlus:
-                for (size_t i = 0; i < out->data_.size(); i++) {
-                    out->data_[i] = std::log(1.0 + std::exp(out->data_[i]));
-                }
+            case Elu:
+                std::transform(in.begin(), in.end(), out.begin(), [](float x) {
+                    if (x < 0.f)
+                        return std::expm1(x);
+                    return x;
+                });
                 break;
-            case kSoftSign:
-                for (size_t i = 0; i < out->data_.size(); i++) {
-                    out->data_[i] = out->data_[i] / (1.0 + std::abs(out->data_[i]));
-                }
+            case SoftPlus:
+                std::transform(in.begin(), in.end(), out.begin(), [](float x) {
+                    return std::log1p(std::exp(x));
+                });
                 break;
-            case kSoftMax:
-                if(out->data_.size() > 1){
-                    float sum = 0.0;
-                    float max = *std::max_element(std::begin(out->data_), std::end(out->data_));
-                    for (size_t i = 0; i < out->data_.size(); i++) {
-                        out->data_[i] = std::exp(out->data_[i] - max);
-                        sum += out->data_[i];
-                    }
-                    for (size_t i = 0; i < out->data_.size(); i++)
-                        out->data_[i] /= sum;
-                }
+            case SoftSign:
+                std::transform(in.begin(), in.end(), out.begin(), [](float x) {
+                    return x / (1.f + std::abs(x));
+                });
                 break;
-            case kHardSigmoid:
-                for (size_t i = 0; i < out->data_.size(); i++) {
-                    float x = (out->data_[i] * 0.2) + 0.5;
+            case HardSigmoid:
+                std::transform(in.begin(), in.end(), out.begin(), [](float x) {
+                    if (x <= -2.5f)
+                        return 0.f;
+                    if (x >= 2.5f)
+                        return 1.f;
+                    return (x * .2f) + .5f;
+                });
+                break;
+            case Sigmoid:
+                std::transform(in.begin(), in.end(), out.begin(), [](float x) {
+                    float z = std::exp(-std::abs(x));
+                    if (x < 0)
+                        return z / (1.f + z);
+                    return 1.f / (1.f + z);
+                });
+                break;
+            case Tanh:
+                std::transform(in.begin(), in.end(), out.begin(), [](float x) {
+                    return std::tanh(x);
+                });
+                break;
+            case SoftMax: {
+                auto channels = cast(in.dims_.back());
+                kassert(channels > 1);
 
-                    if (x <= -2.5) {
-                        out->data_[i] = 0.0;
-                    } else if (x >= 2.5) {
-                        out->data_[i] = 1.0;
-                    } else {
-                        out->data_[i] = x;
-                    }
-                }
-                break;
-            case kSigmoid:
-                for (size_t i = 0; i < out->data_.size(); i++) {
-                    float& x = out->data_[i];
+                Tensor tmp = in;
+                std::transform(in.begin(), in.end(), tmp.begin(), [](float x) {
+                    return std::exp(x);
+                });
 
-                    if (x >= 0) {
-                        out->data_[i] = 1.0 / (1.0 + std::exp(-x));
-                    } else {
-                        float z = std::exp(x);
-                        out->data_[i] = z / (1.0 + z);
-                    }
+                auto out_ = out.begin();
+                for (auto t_ = tmp.begin(); t_ != tmp.end(); t_ += channels) {
+                    // why std::reduce not in libstdc++ yet?
+                    auto norm = 1.f / std::accumulate(t_, t_ + channels, 0.f);
+                    std::transform(
+                        t_, t_ + channels, out_, [norm](float x) { return norm * x; });
+                    out_ += channels;
                 }
-                break;
-            case kTanh:
-                for (size_t i = 0; i < out->data_.size(); i++) {
-                    out->data_[i] = std::tanh(out->data_[i]);
-                }
-                break;
-            default:
                 break;
             }
-
-            return true;
+            }
+            return out;
         }
     }
 }

@@ -1,15 +1,14 @@
+﻿#pragma once
 #include "baseLayer.h"
 namespace keras2cpp{
     namespace layers{
-        class KerasLayerMaxPooling2d : public KerasLayer {
-            public:
-                KerasLayerMaxPooling2d() : pool_size_j_(0), pool_size_k_(0) {}
-                virtual ~KerasLayerMaxPooling2d() {}
-                virtual bool LoadLayer(std::ifstream* file);
-                virtual bool Apply(Tensor* in, Tensor* out);
-            private:
-                unsigned int pool_size_j_;
-                unsigned int pool_size_k_;
+        class MaxPooling2D final : public Layer<MaxPooling2D> {
+            unsigned pool_size_y_{0};
+            unsigned pool_size_x_{0};
+
+        public:
+            MaxPooling2D(Stream& file);
+            Tensor operator()(const Tensor& in) const noexcept override;
         };
     }
 }

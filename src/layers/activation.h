@@ -1,25 +1,24 @@
+﻿#pragma once
 #include "baseLayer.h"
 namespace keras2cpp{
     namespace layers{
-        class KerasLayerActivation : public BaseLayer {
-            public:
-                enum ActivationType {
-                    kLinear = 1,
-                    kRelu = 2,
-                    kSoftPlus = 3,
-                    kSigmoid = 4,
-                    kTanh = 5,
-                    kHardSigmoid = 6,
-                    kElu = 7,
-                    kSoftSign = 8,
-                    kSoftMax = 9
-                };
-                KerasLayerActivation() : activation_type_(ActivationType::kLinear) {}
-                virtual ~KerasLayerActivation() {}
-                virtual bool LoadLayer(std::ifstream* file);
-                virtual bool Apply(Tensor* in, Tensor* out);
-            private:
-                ActivationType activation_type_;
+        class Activation final : public Layer<Activation> {
+            enum _Type : unsigned {
+                Linear = 1,
+                Relu = 2,
+                Elu = 3,
+                SoftPlus = 4,
+                SoftSign = 5,
+                Sigmoid = 6,
+                Tanh = 7,
+                HardSigmoid = 8,
+                SoftMax = 9
+            };
+            _Type type_ {Linear};
+        
+        public:
+            Activation(Stream& file);
+            Tensor operator()(const Tensor& in) const noexcept override;
         };
     }
 }

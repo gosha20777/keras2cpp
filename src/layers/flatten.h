@@ -1,14 +1,11 @@
+﻿#pragma once
 #include "baseLayer.h"
 namespace keras2cpp{
     namespace layers{
-        class KerasLayerFlatten : public KerasLayer {
-            public:
-                KerasLayerFlatten() {}
-                virtual ~KerasLayerFlatten() {}
-                virtual bool LoadLayer(std::ifstream* file);
-                virtual bool Apply(Tensor* in, Tensor* out);
-
-            private:
+        class Flatten final : public Layer<Flatten> {
+        public:
+            using Layer<Flatten>::Layer;
+            Tensor operator()(const Tensor& in) const noexcept override;
         };
     }
 }

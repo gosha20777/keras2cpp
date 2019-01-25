@@ -1,17 +1,14 @@
-#include "baseLayer.h"
+﻿#pragma once
 #include "activation.h"
 namespace keras2cpp{
     namespace layers{
-        class KerasLayerConvolution2d : public KerasLayer {
-            public:
-                KerasLayerConvolution2d() {}
-                virtual ~KerasLayerConvolution2d() {}
-                virtual bool LoadLayer(std::ifstream* file);
-                virtual bool Apply(Tensor* in, Tensor* out);
-            private:
-                Tensor weights_;
-                Tensor biases_;
-                KerasLayerActivation activation_;
+        class Conv2D final : public Layer<Conv2D> {
+            Tensor weights_;
+            Tensor biases_;
+            Activation activation_;
+        public:
+            Conv2D(Stream& file);
+            Tensor operator()(const Tensor& in) const noexcept override;
         };
     }
 }

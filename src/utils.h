@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <chrono>
 #include <cmath>
 #include <functional>
@@ -10,7 +10,7 @@
 #define cast(x) static_cast<ptrdiff_t>(x)
 
 #ifndef NDEBUG
-#define KASSERT_EQ(x, y, eps) \
+#define kassert_eq(x, y, eps) \
     { \
         auto x_ = static_cast<double>(x); \
         auto y_ = static_cast<double>(y); \
@@ -21,15 +21,15 @@
             exit(-1); \
         } \
     }
-#define KASSERT(x) \
+#define kassert(x) \
     if (!(x)) { \
         printf( \
             "ASSERT [%s:%d] '%s' failed\n", __FILE__, __LINE__, stringify(x)); \
         exit(-1); \
     }
 #else
-#define KASSERT(x) ;
-#define KASSERT_EQ(x, y, eps) ;
+#define kassert(x) ;
+#define kassert_eq(x, y, eps) ;
 #endif
 
 namespace keras2cpp {

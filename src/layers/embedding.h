@@ -1,14 +1,13 @@
+﻿#pragma once
 #include "baseLayer.h"
 namespace keras2cpp{
     namespace layers{
-        class KerasLayerEmbedding : public KerasLayer {
-            public:
-                KerasLayerEmbedding() {}
-                virtual ~KerasLayerEmbedding() {}
-                virtual bool LoadLayer(std::ifstream* file);
-                virtual bool Apply(Tensor* in, Tensor* out);
-            private:
-                Tensor weights_;
+        class Embedding final : public Layer<Embedding> {
+            Tensor weights_;
+
+        public:
+            Embedding(Stream& file);
+            Tensor operator()(const Tensor& in) const noexcept override;
         };
     }
 }

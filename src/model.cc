@@ -1,81 +1,65 @@
-#include "model.h"
+﻿#include "model.h"
+#include "layers/conv1d.h"
+#include "layers/conv2d.h"
+#include "layers/dense.h"
+#include "layers/elu.h"
+#include "layers/embedding.h"
+#include "layers/flatten.h"
+#include "layers/locally1d.h"
+#include "layers/locally2d.h"
+#include "layers/lstm.h"
+#include "layers/maxpooling2d.h"
+#include "layers/normalization.h"
+
 namespace keras2cpp {
-    bool KerasModel::LoadModel(const std::string& filename) {
-        std::ifstream file(filename.c_str(), std::ios::binary);
-        KASSERT(file.is_open(), "Unable to open file %s", filename.c_str());
+    namespace layers {
+        using types = std::tuple<
+            Dense,               //0
+            Conv1D,              //1
+            Conv2D,              //2
+            LocallyConnected1D,  //3
+            LocallyConnected2D,  //4
+            Flatten,             //5
+            ELU,                 //6
+            Activation,          //7
+            MaxPooling2D,        //8
+            LSTM,                //9
+            Embedding,           //10
+            BatchNormalization>; //11
+    } 
 
-        unsigned int num_layers = 0;
-        KASSERT(ReadUnsignedInt(&file, &num_layers), "Expected number of layers");
-
-        for (unsigned int i = 0; i < num_layers; i++) {
-            unsigned int layer_type = 0;
-            KASSERT(ReadUnsignedInt(&file, &layer_type), "Expected layer type");
-
-            KerasLayer* layer = NULL;
-
-            switch (layer_type) {
-            case kDense:
-                layer = new KerasLayerDense();
-                break;
-            case kConvolution2d:
-                layer = new KerasLayerConvolution2d();
-                break;
-            case kFlatten:
-                layer = new KerasLayerFlatten();
-                break;
-            case kElu:
-                layer = new KerasLayerElu();
-                break;
-            case kActivation:
-                layer = new KerasLayerActivation();
-                break;
-            case kMaxPooling2D:
-                layer = new KerasLayerMaxPooling2d();
-                break;
-            case kLSTM:
-                layer = new KerasLayerLSTM();
-                break;
-            case kEmbedding:
-                layer = new KerasLayerEmbedding();
-                break;
-            case kBatchNormalization:
-                layer = new KerasLayerBatchNormalization();
-                break;
-            default:
-                break;
-            }
-
-            KASSERT(layer, "Unknown layer type %d", layer_type);
-
-            bool result = layer->LoadLayer(&file);
-            if (!result) {
-                printf("Failed to load layer %d", i);
-                delete layer;
+    template <size_t... I>
+    std::unique_ptr<BaseLayer>
+    _make_layer(std::index_sequence<I...>, Stream& file) {
+        auto id = static_cast<unsigned>(file);
+        std::unique_ptr<BaseLayer> layer;
+        bool found = (... || [&]() {
+            if (id != I)
                 return false;
-            }
+            layer = std::move(
+                std::make_unique<
+                    std::decay_t<std::tuple_element_t<I, layers::types>>>(file));
+            return true;
+        }());
 
-            layers_.push_back(layer);
-        }
-
-        return true;
+        if (!found)
+            throw std::domain_error("Layer not implemented");
+        return layer;
     }
 
-    bool KerasModel::Apply(Tensor* in, Tensor* out) {
-        Tensor temp_in, temp_out;
+    Model::Model(Stream& file) {
+        auto count = static_cast<unsigned>(file);
+        layers_.reserve(count);
+        for (size_t i = 0; i != count; ++i)
+            layers_.push_back(_make_layer(
+                std::make_index_sequence<std::tuple_size_v<layers::types>>(),
+                file));
+    }
 
-        for (unsigned int i = 0; i < layers_.size(); i++) {
-            if (i == 0) {
-                temp_in = *in;
-            }
-
-            KASSERT(layers_[i]->Apply(&temp_in, &temp_out),
-                    "Failed to apply layer %d", i);
-
-            temp_in = temp_out;
-        }
-
-        *out = temp_out;
-
-        return true;
+    Tensor Model::operator()(const Tensor& in) const noexcept {
+        Tensor out = in;
+        for (auto&& layer : layers_)
+            out = (*layer)(out);
+        return out;
     }
 }
