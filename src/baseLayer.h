@@ -1,7 +1,6 @@
 #pragma once
 
 #include "tensor.h"
-#include "reader.h"
 
 namespace keras2cpp {
     class BaseLayer {

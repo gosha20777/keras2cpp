@@ -1,54 +1,50 @@
 #pragma once
-#ifndef KERAS_MODEL_H_
-#define KERAS_MODEL_H_
-
-#include <algorithm>
 #include <chrono>
-#include <math.h>
-#include <numeric>
-#include <string>
-#include <vector>
+#include <cmath>
+#include <functional>
+#include <tuple>
+#include <type_traits>
 
-#define KASSERT(x, ...)                                                        \
-    if (!(x)) {                                                                \
-        printf("KASSERT: %s(%d): ", __FILE__, __LINE__);                       \
-        printf(__VA_ARGS__);                                                   \
-        printf("\n");                                                          \
-        return false;                                                          \
+#define stringify(x) #x
+
+#define cast(x) static_cast<ptrdiff_t>(x)
+
+#ifndef NDEBUG
+#define KASSERT_EQ(x, y, eps) \
+    { \
+        auto x_ = static_cast<double>(x); \
+        auto y_ = static_cast<double>(y); \
+        if (std::abs(x_ - y_) > eps) { \
+            printf( \
+                "ASSERT [%s:%d] %f isn't equal to %f ('%s' != '%s')\n", \
+                __FILE__, __LINE__, x_, y_, stringify(x), stringify(y)); \
+            exit(-1); \
+        } \
     }
-
-#define KASSERT_EQ(x, y, eps)                                                  \
-    if (fabs(x - y) > eps) {                                                   \
-        printf("KASSERT: Expected %f, got %f\n", y, x);                        \
-        return false;                                                          \
-    }
-
-#ifdef DEBUG
-#define KDEBUG(x, ...)                                                         \
-    if (!(x)) {                                                                \
-        printf("%s(%d): ", __FILE__, __LINE__);                                \
-        printf(__VA_ARGS__);                                                   \
-        printf("\n");                                                          \
-        exit(-1);                                                              \
+#define KASSERT(x) \
+    if (!(x)) { \
+        printf( \
+            "ASSERT [%s:%d] '%s' failed\n", __FILE__, __LINE__, stringify(x)); \
+        exit(-1); \
     }
 #else
-#define KDEBUG(x, ...) ;
-#endif
+#define KASSERT(x) ;
+#define KASSERT_EQ(x, y, eps) ;
 #endif
 
 namespace keras2cpp {
-    class KerasTimer {
-        public:
-            KerasTimer() {}
-            void Start() { start_ = std::chrono::high_resolution_clock::now(); }
-
-            double Stop() {
-                std::chrono::time_point<std::chrono::high_resolution_clock> now =
-                                        std::chrono::high_resolution_clock::now();
-                std::chrono::duration<double> diff = now - start_;
-                return diff.count();
-            }
-        private:
-            std::chrono::time_point<std::chrono::high_resolution_clock> start_;
-    };
+    template <typename Callable, typename... Args>
+    auto timeit(Callable&& callable, Args&&... args) {
+        using namespace std::chrono;
+        auto begin = high_resolution_clock::now();
+        auto result = [&]() {
+            if constexpr (std::is_void_v<std::invoke_result_t<Callable, Args...>>)
+                return (std::invoke(callable, args...), nullptr);
+            else
+                return std::invoke(callable, args...);
+        }();
+        return std::make_tuple(
+            std::move(result),
+            duration<double>(high_resolution_clock::now() - begin).count());
+    }
 }

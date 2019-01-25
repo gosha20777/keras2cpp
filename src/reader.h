@@ -1,31 +1,23 @@
-#include "utils.h"
-bool ReadUnsignedInt(std::ifstream* file, unsigned int* i) {
-    KASSERT(file, "Invalid file stream");
-    KASSERT(i, "Invalid pointer");
+#pragma once
+#include <memory>
+#include <type_traits>
 
-    file->read((char*)i, sizeof(unsigned int));
-    KASSERT(file->gcount() == sizeof(unsigned int), "Expected unsigned int");
+namespace keras2cpp {
+    class Stream {
+        class _Impl;
+        std::unique_ptr<_Impl> impl_;
+    public:
+        Stream(const std::string&);
+        ~Stream();
 
-    return true;
-}
-
-bool ReadFloat(std::ifstream* file, float* f) {
-    KASSERT(file, "Invalid file stream");
-    KASSERT(f, "Invalid pointer");
-
-    file->read((char*)f, sizeof(float));
-    KASSERT(file->gcount() == sizeof(float), "Expected float");
-
-    return true;
-}
-
-bool ReadFloats(std::ifstream* file, float* f, size_t n) {
-    KASSERT(file, "Invalid file stream");
-    KASSERT(f, "Invalid pointer");
-
-    file->read((char*)f, sizeof(float) * n);
-    KASSERT(((unsigned int)file->gcount()) == sizeof(float) * n,
-            "Expected floats");
-
-    return true;
+        Stream& reads(char*, size_t);
+        template <
+            typename T,
+            typename = std::enable_if_t<std::is_default_constructible_v<T>>>
+        operator T() noexcept {
+            T value;
+            reads(reinterpret_cast<char*>(&value), sizeof(T));
+            return value;
+        }
+    };
 }
