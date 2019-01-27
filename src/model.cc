@@ -8,8 +8,8 @@
 #include "layers/locally1d.h"
 #include "layers/locally2d.h"
 #include "layers/lstm.h"
-#include "layers/maxpooling2d.h"
-#include "layers/normalization.h"
+#include "layers/maxPooling2d.h"
+#include "layers/batchNormalization.h"
 
 namespace keras2cpp {
     namespace layers {
