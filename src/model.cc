@@ -9,51 +9,44 @@
 #include "layers/locally2d.h"
 #include "layers/lstm.h"
 #include "layers/maxpooling2d.h"
-#include "layers/normalization.h"
+#include "layers/batchNormalization.h"
 
 namespace keras2cpp {
-    namespace layers {
-        using types = std::tuple<
-            Dense,               //0
-            Conv1D,              //1
-            Conv2D,              //2
-            LocallyConnected1D,  //3
-            LocallyConnected2D,  //4
-            Flatten,             //5
-            ELU,                 //6
-            Activation,          //7
-            MaxPooling2D,        //8
-            LSTM,                //9
-            Embedding,           //10
-            BatchNormalization>; //11
-    } 
-
-    template <size_t... I>
-    std::unique_ptr<BaseLayer>
-    _make_layer(std::index_sequence<I...>, Stream& file) {
-        auto id = static_cast<unsigned>(file);
-        std::unique_ptr<BaseLayer> layer;
-        bool found = (... || [&]() {
-            if (id != I)
-                return false;
-            layer = std::move(
-                std::make_unique<
-                    std::decay_t<std::tuple_element_t<I, layers::types>>>(file));
-            return true;
-        }());
-
-        if (!found)
-            throw std::domain_error("Layer not implemented");
-        return layer;
-    }
+    std::unique_ptr<BaseLayer> Model::make_layer(Stream& file) {
+        switch (static_cast<unsigned>(file)) {
+            case Dense:
+                return layers::Dense::make(file);
+            case Conv1D:
+                return layers::Conv1D::make(file);
+            case Conv2D:
+                return layers::Conv2D::make(file);
+            case LocallyConnected1D:
+                return layers::LocallyConnected1D::make(file);
+            case LocallyConnected2D:
+                return layers::LocallyConnected2D::make(file);
+            case Flatten:
+                return layers::Flatten::make(file);
+            case ELU:
+                return layers::ELU::make(file);
+            case Activation:
+                return layers::Activation::make(file);
+            case MaxPooling2D:
+                return layers::MaxPooling2D::make(file);
+            case LSTM:
+                return layers::LSTM::make(file);
+            case Embedding:
+                return layers::Embedding::make(file);
+            case BatchNormalization:
+                return layers::BatchNormalization::make(file);
+        }
+        return nullptr;
+    };
 
     Model::Model(Stream& file) {
         auto count = static_cast<unsigned>(file);
         layers_.reserve(count);
         for (size_t i = 0; i != count; ++i)
-            layers_.push_back(_make_layer(
-                std::make_index_sequence<std::tuple_size_v<layers::types>>(),
-                file));
+            layers_.push_back(make_layer(file));
     }
 
     Tensor Model::operator()(const Tensor& in) const noexcept {

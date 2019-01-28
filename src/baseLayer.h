@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "tensor.h"
+#include <memory>
 
 namespace keras2cpp {
     class BaseLayer {
@@ -19,6 +20,10 @@ namespace keras2cpp {
         static Derived load(const std::string& filename) {
             Stream file(filename);
             return Derived(file);
+        }
+
+        static std::unique_ptr<BaseLayer> make(Stream& file) {
+            return std::make_unique<Derived>(file);
         }
     };
 }

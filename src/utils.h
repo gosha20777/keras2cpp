@@ -1,9 +1,11 @@
 ﻿#pragma once
 #include <chrono>
-#include <cmath>
+#include <cmath>	
+#include <fstream>
 #include <functional>
 #include <tuple>
 #include <type_traits>
+#include <vector>
 
 #define stringify(x) #x
 
@@ -37,14 +39,29 @@ namespace keras2cpp {
     auto timeit(Callable&& callable, Args&&... args) {
         using namespace std::chrono;
         auto begin = high_resolution_clock::now();
-        auto result = [&]() {
-            if constexpr (std::is_void_v<std::invoke_result_t<Callable, Args...>>)
-                return (std::invoke(callable, args...), nullptr);
-            else
-                return std::invoke(callable, args...);
-        }();
-        return std::make_tuple(
-            std::move(result),
-            duration<double>(high_resolution_clock::now() - begin).count());
+        if constexpr (std::is_void_v<std::invoke_result_t<Callable, Args...>>)
+            return std::make_tuple(
+                (std::invoke(callable, args...), nullptr),
+                duration<double>(high_resolution_clock::now() - begin).count());
+        else
+            return std::make_tuple(
+                std::invoke(callable, args...),
+                duration<double>(high_resolution_clock::now() - begin).count());
     }
+    class Stream {
+        std::ifstream stream_;
+    
+    public:
+        Stream(const std::string& filename);
+        Stream& reads(char*, size_t);
+    
+        template <
+            typename T,
+            typename = std::enable_if_t<std::is_default_constructible_v<T>>>
+        operator T() noexcept {
+            T value;
+            reads(reinterpret_cast<char*>(&value), sizeof(T));
+            return value;
+        }
+    };
 }

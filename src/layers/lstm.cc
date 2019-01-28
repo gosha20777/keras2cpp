@@ -1,4 +1,5 @@
 ﻿#include "lstm.h"
+#include <tuple>
 namespace keras2cpp{
     namespace layers{
         LSTM::LSTM(Stream& file)
