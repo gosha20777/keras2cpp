@@ -1,4 +1,4 @@
-#include "baseLayer.h"
+#include "../baseLayer.h"
 #include "activation.h"
 namespace keras2cpp{
     namespace layers{

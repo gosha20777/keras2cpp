@@ -8,11 +8,7 @@
 #include "layers/locally1d.h"
 #include "layers/locally2d.h"
 #include "layers/lstm.h"
-<<<<<<< HEAD
-#include "layers/maxpooling2d.h"
-=======
 #include "layers/maxPooling2d.h"
->>>>>>> eadee3d4501ffc3b8257d7c6958c084ebd14b04d
 #include "layers/batchNormalization.h"
 
 namespace keras2cpp {
@@ -44,7 +40,7 @@ namespace keras2cpp {
                 return layers::BatchNormalization::make(file);
         }
         return nullptr;
-    };
+    }
 
     Model::Model(Stream& file) {
         auto count = static_cast<unsigned>(file);

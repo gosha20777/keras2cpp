@@ -10,3 +10,4 @@ __pycache__/
 *.vspx
 *.sap
 .vscode/
+build/

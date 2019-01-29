@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "baseLayer.h"
+#include "../baseLayer.h"
 namespace keras2cpp{
     namespace layers{
         class Activation final : public Layer<Activation> {

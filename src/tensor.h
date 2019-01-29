@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <numeric>
 #include "utils.h"
-#include "reader.h"
+//#include "reader.h"
 
 namespace keras2cpp {
     class Tensor {
