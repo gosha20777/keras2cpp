@@ -108,7 +108,7 @@ int main()
 
 ```bash
 $ mkdir build && cd build
-$ python3 .. python_model.py
+$ python3 ../python_model.py
 [[-1.85735667]]
 
 $ cmake ..
