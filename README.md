@@ -107,6 +107,8 @@ int main()
 *Tested with Keras 2.2.1, Python 3.6*
 
 ```bash
+$ git clone https://github.com/gosha20777/keras2cpp.git
+$ cd keras2cpp
 $ mkdir build && cd build
 $ python3 ../python_model.py
 [[-1.85735667]]
