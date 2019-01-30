@@ -82,22 +82,22 @@ export_model(model, 'example.model')
 cpp_mpdel.cc:
 
 ```c++
-#include "keras_model.h"
+#include "src/model.h"
 
-int main() 
-{
+using keras2cpp::Model;
+using keras2cpp::Tensor;
+
+int main() {
     // Initialize model.
-    KerasModel model;
-    model.LoadModel("example.model");
+    auto model = Model::load("example.model");
 
     // Create a 1D Tensor on length 10 for input data.
-    Tensor in(10);
-    in.data_ = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}};
+    Tensor in{10};
+    in.data_ = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
     // Run prediction.
-    Tensor out;
-    model.Apply(&in, &out);
-    out.Print();
+    Tensor out = model(in);
+    out.print();
     return 0;
 }
 ```
