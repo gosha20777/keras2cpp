@@ -1,4 +1,4 @@
-# Keras2cpp ![release](https://img.shields.io/github/release/gosha20777/keras2cpp.svg?colorB=red) ![lisense](https://img.shields.io/github/license/gosha20777/keras2cpp.svg) ![progress](http://progressed.io/bar/68?title=progres)
+# Keras2cpp ![release](https://img.shields.io/github/release/gosha20777/keras2cpp.svg?colorB=red) ![lisense](https://img.shields.io/github/license/gosha20777/keras2cpp.svg) ![progress](http://progressed.io/bar/90?title=progres)
 
 ![keras2cpp](docs/img/keras2cpp.png)
 
@@ -16,19 +16,20 @@ Design goals:
 
 Supported Keras layers:
 - [x] Dense
+- [x] Convolution1D
 - [x] Convolution2D
+- [ ] Convolution3D
 - [x] Flatten
 - [x] ELU
 - [x] Activation
 - [x] MaxPooling2D
-- [x] LSTM
 - [x] Embedding
-- [ ] Convolution1D
-- [ ] Convolution3D
-- [ ] LocallyConnected1D
+- [x] LocallyConnected1D
+- [x] LocallyConnected2D
+- [x] LSTM
 - [ ] GRU
 - [ ] CNN
-- [X] BatchNormalization *(dirty)*
+- [X] BatchNormalization
 
 Supported activation:
 - [x] linear
@@ -44,7 +45,7 @@ Supported activation:
 Other tasks:
 - [x] Create unit tests
 - [x] Create Makefile
-- [ ] Code refactoring *(in progress)*
+- [x] Code refactoring *(in progress)*
 
 The project is compatible with Keras 2.x (all versions) and Python 3.x
 
@@ -101,16 +102,18 @@ int main()
 }
 ```
 
-# Test
+# How to build and run
 
 *Tested with Keras 2.2.1, Python 3.6*
 
 ```bash
-$ python python_model.py
+$ mkdir build && cd build
+$ python3 ../python_model.py
 [[-1.85735667]]
 
-$ g++ --std=c++11 -Wall -O3 cpp_model.cc keras_model.cc
-$ ./a.out 
+$ cmake ..
+$ cmake --build .
+$ ./keras2cpp
 [ -1.857357 ]
 ```
 
