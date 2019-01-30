@@ -98,7 +98,7 @@ target_sources(keras2cpp PRIVATE
     src/layers/lstm.cc
     src/layers/locally1d.cc
     src/layers/locally2d.cc
-    src/layers/maxpooling2d.cc
+    src/layers/maxPooling2d.cc
     src/layers/batchNormalization.cc
     src/model.cc
     src/tensor.cc
