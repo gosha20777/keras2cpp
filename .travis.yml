@@ -1,6 +1,7 @@
+dist: trusty
+sudo: required
 language: cpp
 compiler: gcc
-dist: trusty
 
 before_install:
   # C++17
@@ -9,11 +10,11 @@ before_install:
 
 install: 
   # C++17
-  - sudo apt-get install -y g++-6 python3-pip
+  - sudo apt-get install -qq g++-6 python3-pip
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   # cppcheck
   - sudo apt-get install -qq cppcheck
-  - sudo pip3 install keras install tensorflow==1.12
+  - sudo pip3 install tensorflow==1.12 keras
 script: 
   # Build and run this project
   - mkdir build && cd build
