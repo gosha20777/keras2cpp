@@ -13,8 +13,7 @@ install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   # cppcheck
   - sudo apt-get install -qq cppcheck
-  - pip3 install keras
-  - python3 -m pip install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-py3-none-any.whl
+  - sudo pip3 install keras install tensorflow==1.12
 script: 
   # Build and run this project
   - mkdir build && cd build
