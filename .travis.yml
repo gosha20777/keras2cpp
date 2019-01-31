@@ -11,7 +11,7 @@ before_install:
 
 install: 
   # C++17
-  - sudo apt-get install -qq g++-6 python-3.6 python3-pip
+  - sudo apt-get install -qq g++-6 python3.6 python3-pip
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   # cppcheck
   - sudo apt-get install -qq cppcheck
