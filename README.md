@@ -125,5 +125,5 @@ MIT
 
 # Similar projects
 
-I found another similar project on Github <https://github.com/pplonski/keras2cpp/>, but It vorks only with Kekas 1 and didn’t work for me.
+I found another similar project on Github <https://github.com/pplonski/keras2cpp/>, but It works only with Kekas 1 and didn’t work for me.
 That's why I wrote my own implementation.
