@@ -1,5 +1,5 @@
-dist: trusty
-sudo: required
+dist: xenial
+#sudo: required
 language: cpp
 compiler: gcc
 
