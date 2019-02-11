@@ -1,27 +1,66 @@
 dist: xenial
 #sudo: required
-language: cpp
-compiler: gcc
-
+language: python
+matrix:
+  include:
+    - python: 3.6
+      env: KERAS_BACKEND=tensorflow
 before_install:
   # C++17
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo add-apt-repository -y ppa:jonathonf/python-3.6
   - sudo apt-get update -qq
 
-install: 
+install:
+  # python
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+ 
+  - travis_retry conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
+  - source activate test-environment
+ 
+  - travis_retry pip install --only-binary=numpy,scipy,pandas numpy nose scipy h5py theano pytest pytest-pep8 pandas --progress-bar off
+  - pip install keras_applications keras_preprocessing --progress-bar off
+ 
+  # set library path
+  - export LD_LIBRARY_PATH=$HOME/miniconda/envs/test-environment/lib/:$LD_LIBRARY_PATH
+ 
+  # install pydot for visualization tests
+  - travis_retry conda install -q $MKL pydot graphviz $PIL
+ 
+  #- pip install -e .[tests] --progress-bar off
+ 
+  # install TensorFlow (CPU version).
+  - pip install tensorflow==1.12 --progress-bar off
+  - python -c "import tensorflow"
+  - pip install keras --progress-bar off
+  - python -c "import keras"
+ 
+  # install mkdocs
+  - pip install mkdocs --progress-bar off
+  
   # C++17
-  - sudo apt-get install -qq g++-6 python3.6 python3-pip
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
+  - sudo apt-get install -qq g++-6
+  - sudo apt-get install -qq g++-7
+  - sudo apt-get install -qq build-essential
+  - export TRAVIS_COMPILER=/usr/bin/g++-7
+  - export CXX=/usr/bin/g++-7
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
+  - sudo apt-get install -qq make cmake
   # cppcheck
   - sudo apt-get install -qq cppcheck
-  - sudo pip3 install setuptools pandas numpy nose scipy h5py mkdocs pytest tensorflow keras --progress-bar off
 script: 
   # Build and run this project
   - mkdir build && cd build
   - cmake ..
   - cmake --build .
-  - python3 ../python_model.py
+  - python ../python_model.py
   - ./keras2cpp
   # cppcheck
   - cppcheck --quiet --error-exitcode=1 . 
