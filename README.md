@@ -78,7 +78,7 @@ from keras2cpp import export_model
 export_model(model, 'example.model')
 ```
 
-cpp_mpdel.cc:
+cpp_model.cc:
 
 ```c++
 #include "src/model.h"
