@@ -78,7 +78,7 @@ from keras2cpp import export_model
 export_model(model, 'example.model')
 ```
 
-cpp_mpdel.cc:
+cpp_model.cc:
 
 ```c++
 #include "src/model.h"
@@ -129,5 +129,5 @@ I found another similar projects on Github:
 - <https://github.com/moof2k/kerasify>
 - <https://github.com/Dobiasd/frugally-deep>
 
-But It works only with Kekas 1 and didn’t work for me. 
+But It works only with Keras 1 and didn’t work for me. 
 That's why I wrote my own implementation.
